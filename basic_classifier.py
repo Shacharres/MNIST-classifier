@@ -40,7 +40,7 @@ def train_generator(npz_path: str, batch_size: int = 32):
         yield resize_im(np.clip(train_data[sample_idxs], 0, 1), 28).astype('float32'), np.array(train_labels[sample_idxs])
 
 
-def get_model(model_name='conv', rnd_initializer=False, lr=1e-4):    
+def get_model(rnd_initializer=False, lr=1e-4):    
     input_shape = (28, 28, 1)
     if rnd_initializer:
         print('createing model with RandomNormal initializer')
@@ -71,7 +71,7 @@ def get_model(model_name='conv', rnd_initializer=False, lr=1e-4):
 
 
 def train_mnist_classifier(rnd_initializer=False, lr=1e-4, train_path="./data/classifier/train_w-wo", val_path="./data/classifier/val_w-wo"):
-    model = get_model(model_name, rnd_initializer, lr)
+    model = get_model(rnd_initializer, lr)
     train_gen = train_generator(train_path, batch_size=128)
     valid_gen = train_generator(val_path, batch_size=96)
     timestr = time.strftime("%d-%m-%Y_%H-%M")
@@ -83,7 +83,7 @@ def train_mnist_classifier(rnd_initializer=False, lr=1e-4, train_path="./data/cl
 
     history = model.fit_generator(generator=train_gen, epochs=150, verbose=2, steps_per_epoch=2000, validation_data=valid_gen, validation_steps=250, callbacks=[es, mc])
     model.save('my_mnist_classifier_'+timestr+'.h5')
-    with open('classifier_train_history_' + model_name + 'model_' + timestr, 'wb') as f:
+    with open('classifier_train_history_' + timestr, 'wb') as f:
         pickle.dump(history.history, f)
 
 
